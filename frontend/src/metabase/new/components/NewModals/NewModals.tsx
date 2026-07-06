@@ -10,7 +10,6 @@ import CreateCollectionModal, {
   type CreateCollectionModalOwnProps,
 } from "metabase/common/collections/containers/CreateCollectionModal";
 import { useInitialCollectionId } from "metabase/common/collections/hooks";
-import { UpgradeModal } from "metabase/common/components/upsells/components/UpgradeModal";
 import { STATIC_LEGACY_EMBEDDING_TYPE } from "metabase/embedding/constants";
 import {
   LegacyStaticEmbeddingModal,
@@ -129,7 +128,7 @@ export const NewModals = withRouter((props: WithRouterProps) => {
       );
     }
     case "upgrade":
-      return <UpgradeModal opened onClose={handleModalClose} />;
+      return null;
     default:
       return (
         <PaletteShortcutsModal

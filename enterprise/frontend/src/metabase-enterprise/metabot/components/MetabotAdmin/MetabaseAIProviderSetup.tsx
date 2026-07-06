@@ -355,7 +355,7 @@ function MetabaseManagedProviderCard({
               {t`You've run out of AI service tokens`}
             </Text>
             <Text c="text-secondary" fz="sm" lh={1.4}>
-              {t`You've used all of your included AI service tokens. To keep using AI features you can either end your trial early and start your subscription, or stay in the trial and add your own AI provider API key.`}
+              {t`You've used all of your included AI service tokens. To keep using AI features, add your own AI provider API key.`}
             </Text>
             <MetabotManagedProviderLimitActions
               inline
@@ -370,7 +370,7 @@ function MetabaseManagedProviderCard({
             <>
               <Text c="text-secondary" lh="1">{t`Included use`}</Text>
               <MetabaseUsageRow
-                label={t`Free trial tokens`}
+                label={t`Included tokens`}
                 value={`${formatNumber(tokens)} / ${formatNumber(freeTokens)}`}
               />
               {!isLoadingPricing && pricing ? (

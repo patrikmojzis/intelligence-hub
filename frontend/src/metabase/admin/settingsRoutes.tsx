@@ -20,7 +20,6 @@ import { SettingsLdapForm } from "./settings/components/SettingsLdapForm";
 import { SettingsNav } from "./settings/components/SettingsNav";
 import { AppearanceSettingsPage } from "./settings/components/SettingsPages/AppearanceSettingsPage";
 import { AuthenticationSettingsPage } from "./settings/components/SettingsPages/AuthenticationSettingsPage";
-import { CloudSettingsPage } from "./settings/components/SettingsPages/CloudSettingsPage";
 import {
   CustomVisualizationsDevelopmentPage,
   CustomVisualizationsFormPage,
@@ -125,7 +124,6 @@ export const getSettingsRoutes = (
         path="whitelabel/conceal-metabase"
         component={() => <AppearanceSettingsPage tab="conceal-metabase" />}
       />
-      <Route path="cloud" component={CloudSettingsPage} />
       <Route path="*" component={NotFound} />
     </Route>
   );

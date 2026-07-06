@@ -122,16 +122,6 @@ export function SettingsNav() {
       />
       <NavDivider />
       <SettingsNavItem path="license" label={t`License`} icon="store" />
-      <SettingsNavItem
-        path="cloud"
-        label={
-          <Flex gap="sm" align="center">
-            <span>{t`Cloud`}</span>
-            {!hasHosting && <UpsellGem />}
-          </Flex>
-        }
-        icon="cloud"
-      />
       {isSecurityCenterEnabled && (
         <Box
           pos="sticky"
