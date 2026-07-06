@@ -268,13 +268,9 @@ describe("DatabaseReplicationForm", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Not enough storage. Please upgrade your plan or modify the replication scope by excluding schemas.",
+          "Not enough storage. Modify the replication scope by excluding schemas.",
         ),
       ).toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText("Get more storage")).toBeInTheDocument();
     });
 
     const submitButton = screen.getByRole("button", {

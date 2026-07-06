@@ -87,7 +87,7 @@ describe("PausedModal", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("should show a store link for admins", async () => {
+  it("should show neutral storage guidance for admins", async () => {
     await setup({
       isDwh: true,
       errorText: "Code: 497 This is *not* good",
@@ -97,11 +97,15 @@ describe("PausedModal", () => {
     expect(
       await screen.findByText("Couldn't upload the file, storage is full"),
     ).toBeInTheDocument();
-
-    expect(screen.getByText("Add more storage")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Connect a database to store uploaded files, or contact your admin to configure file storage.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "OK" })).toBeInTheDocument();
   });
 
-  it("should not show a store link for non-admins", async () => {
+  it("should show neutral storage guidance for non-admins", async () => {
     await setup({
       isDwh: true,
       errorText: "Code: 497 This is *not* good",
@@ -111,10 +115,11 @@ describe("PausedModal", () => {
     expect(
       await screen.findByText("Couldn't upload the file, storage is full"),
     ).toBeInTheDocument();
-
-    expect(screen.queryByText("Add more storage")).not.toBeInTheDocument();
     expect(
-      screen.getByText("Please contact your admin to add more storage."),
+      screen.getByText(
+        "Connect a database to store uploaded files, or contact your admin to configure file storage.",
+      ),
     ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "OK" })).toBeInTheDocument();
   });
 });

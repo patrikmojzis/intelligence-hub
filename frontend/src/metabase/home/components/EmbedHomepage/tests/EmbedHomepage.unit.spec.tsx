@@ -202,26 +202,10 @@ describe("EmbedHomepage (OSS)", () => {
     });
   });
 
-  it("should show the advanced embeds upsell for OSS users", () => {
+  it("should not show the removed advanced embeds upsell for OSS users", () => {
     setup({ isAdmin: true });
 
-    expect(screen.getByText("More advanced embeds")).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
-        "Give your customers the full power of Metabase in your own app, with SSO, advanced permissions, customization, and more.",
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("link", { name: "Try Metabase Pro" }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("link", { name: "Try Metabase Pro" }),
-    ).toHaveAttribute(
-      "href",
-      "https://www.metabase.com/upgrade?utm_source=product&utm_medium=upsell&utm_campaign=advanced-embeds&utm_content=embedding-homepage&source_plan=oss",
-    );
+    expect(screen.queryByText("More advanced embeds")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /advanced embeds/i })).not.toBeInTheDocument();
   });
 });
