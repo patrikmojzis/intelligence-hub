@@ -4,7 +4,7 @@ import { hasPremiumFeature } from "metabase-enterprise/settings";
 import { PythonTransformEditor } from "./components/PythonTransformEditor";
 import { SHARED_LIB_IMPORT_PATH } from "./constants";
 import { PythonRunnerSettingsPage } from "./pages/PythonRunnerSettingsPage";
-import { getPythonTransformsRoutes, getPythonUpsellRoutes } from "./routes";
+import { getPythonTransformsRoutes } from "./routes";
 import { getPythonSourceValidationResult } from "./utils";
 
 /**
@@ -20,8 +20,6 @@ export function initializePlugin() {
     PLUGIN_TRANSFORMS_PYTHON.TransformEditor = PythonTransformEditor;
     PLUGIN_TRANSFORMS_PYTHON.PythonRunnerSettingsPage =
       PythonRunnerSettingsPage;
-  } else {
-    PLUGIN_TRANSFORMS_PYTHON.getPythonTransformsRoutes = getPythonUpsellRoutes;
   }
 
   PLUGIN_TRANSFORMS_PYTHON.sharedLibImportPath = SHARED_LIB_IMPORT_PATH;

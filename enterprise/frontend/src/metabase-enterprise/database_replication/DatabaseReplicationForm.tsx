@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { c, t } from "ttag";
 import * as Yup from "yup";
 
-import { ExternalLink } from "metabase/common/components/ExternalLink";
-import { useStoreUrl } from "metabase/common/hooks";
 import { useDebouncedValue } from "metabase/common/hooks/use-debounced-value";
 import {
   Form,
@@ -85,8 +83,6 @@ export const DatabaseReplicationForm = ({
   ) => void;
   initialValues: DatabaseReplicationFormFields;
 }) => {
-  const storeUrl = useStoreUrl("account/storage");
-
   const [schemaFiltersType, setSchemaFiltersType] = useState(
     initialValues.schemaFiltersType,
   );
@@ -145,10 +141,7 @@ export const DatabaseReplicationForm = ({
         {previewResponse.errors?.noTables ? (
           <Text>{t`Nothing to replicate. Please select schemas containing at least one table to be replicated.`}</Text>
         ) : previewResponse.errors?.noQuota ? (
-          <>
-            <Text>{t`Not enough storage. Please upgrade your plan or modify the replication scope by excluding schemas.`}</Text>
-            <ExternalLink href={storeUrl}>{t`Get more storage`}</ExternalLink>
-          </>
+          <Text>{t`Not enough storage. Modify the replication scope by excluding schemas.`}</Text>
         ) : null}
       </>
     ) : null;
