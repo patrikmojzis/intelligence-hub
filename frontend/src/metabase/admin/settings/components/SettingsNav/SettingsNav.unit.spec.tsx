@@ -69,19 +69,7 @@ describe("SettingsNav", () => {
     expect(await screen.findByText("Authentication")).toBeInTheDocument();
   });
 
-  it("should show Remote sync upsell nav item for non-pro plans", async () => {
-    await setup({
-      initialRoute: "/admin/settings/general",
-      tokenFeatures: {
-        "custom-viz": false,
-        "custom-viz-available": false,
-      },
-    });
-
-    expect(await screen.findByText("Remote sync")).toBeInTheDocument();
-  });
-
-  it("should hide Remote sync upsell nav item for pro plans", async () => {
+  it("should hide Remote sync nav item", async () => {
     await setup({ initialRoute: "/admin/settings/general" });
 
     expect(screen.queryByText("Remote sync")).not.toBeInTheDocument();
@@ -153,31 +141,13 @@ describe("SettingsNav", () => {
     expect(screen.queryByText("Updates")).not.toBeInTheDocument();
   });
 
-  it("should show Development nav item when custom viz dev mode is enabled", async () => {
+  it("should hide custom visualizations nav", async () => {
     await setup({
-      initialRoute: "/admin/settings/custom-visualizations",
+      initialRoute: "/admin/settings/general",
       customVizDevModeEnabled: true,
     });
 
-    const customVizNavItem = await screen.findByRole("link", {
-      name: /Custom visualizations/,
-    });
-    await userEvent.click(customVizNavItem);
-
-    expect(screen.getByText("Development")).toBeInTheDocument();
-  });
-
-  it("should hide Development nav item when custom viz dev mode is disabled", async () => {
-    await setup({
-      initialRoute: "/admin/settings/custom-visualizations",
-      customVizDevModeEnabled: false,
-    });
-
-    const customVizNavItem = await screen.findByRole("link", {
-      name: /Custom visualizations/,
-    });
-    await userEvent.click(customVizNavItem);
-
+    expect(screen.queryByText("Custom visualizations")).not.toBeInTheDocument();
     expect(screen.queryByText("Manage visualizations")).not.toBeInTheDocument();
     expect(screen.queryByText("Development")).not.toBeInTheDocument();
   });
