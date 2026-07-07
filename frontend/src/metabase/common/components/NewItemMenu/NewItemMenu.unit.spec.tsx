@@ -87,20 +87,14 @@ describe("NewItemMenu", () => {
     expect(screen.queryByText("Action")).not.toBeInTheDocument();
   });
 
-  it("shows AI exploration when NLQ access exists but AI is not configured", async () => {
+  it("does not show AI exploration in the new menu", async () => {
     await setup({ isConfigured: false });
 
-    expect(await screen.findByText("AI exploration")).toBeInTheDocument();
+    expect(screen.queryByText("AI exploration")).not.toBeInTheDocument();
   });
 
   it("should support keyboard navigation", async () => {
     await setup();
-
-    await userEvent.keyboard("{ArrowDown}");
-
-    expect(
-      await screen.findByRole("menuitem", { name: /AI exploration/ }),
-    ).toHaveFocus();
 
     await userEvent.keyboard("{ArrowDown}");
 
