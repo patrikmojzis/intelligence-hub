@@ -80,6 +80,8 @@ jobs:
           build-args: |
             MB_EDITION=ee
             VERSION=v1.0.0-intelligence-hub-${{ github.sha }}
+            GIT_BRANCH=${{ github.ref_name }}
+            GIT_COMMIT_SHA=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

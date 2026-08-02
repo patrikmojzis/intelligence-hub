@@ -8,6 +8,8 @@ FROM node:22-bullseye AS builder
 # for local debugging, but make a bare production build deterministic.
 ARG MB_EDITION=ee
 ARG VERSION=v1.0.0-intelligence-hub-SNAPSHOT
+ARG GIT_BRANCH=unknown
+ARG GIT_COMMIT_SHA=unknown
 
 WORKDIR /home/node
 
@@ -25,16 +27,18 @@ ENV PATH="/root/.local/bin:$PATH"
 
 COPY . .
 
-# version is pulled from git, but git doesn't trust the directory due to different owners
-RUN git config --global --add safe.directory /home/node
-
 # install bun for frontend dependencies
 RUN npm install -g bun
 
 # install frontend dependencies
 RUN bun install --frozen-lockfile
 
-RUN INTERACTIVE=false CI=true MB_EDITION="$MB_EDITION" bin/build.sh :version "$VERSION"
+RUN INTERACTIVE=false \
+    CI=true \
+    MB_EDITION="$MB_EDITION" \
+    GIT_BRANCH="$GIT_BRANCH" \
+    GIT_COMMIT_SHA="$GIT_COMMIT_SHA" \
+    bin/build.sh :version "$VERSION"
 
 # ###################
 # # STAGE 2: runner
