@@ -7,7 +7,7 @@ FROM node:22-bullseye AS builder
 # Intelligence Hub ships the Enterprise build. Keep both arguments overridable
 # for local debugging, but make a bare production build deterministic.
 ARG MB_EDITION=ee
-ARG VERSION=1.0.0-intelligence-hub-SNAPSHOT
+ARG VERSION=v1.0.0-intelligence-hub-SNAPSHOT
 
 WORKDIR /home/node
 
