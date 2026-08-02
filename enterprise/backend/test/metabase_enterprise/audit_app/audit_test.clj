@@ -8,6 +8,7 @@
    [metabase-enterprise.audit-app.settings :as ee.audit.settings]
    [metabase-enterprise.serialization.cmd :as serialization.cmd]
    [metabase-enterprise.serialization.v2.backfill-ids :as serdes.backfill]
+   [metabase.app-db.cluster-lock :as cluster-lock]
    [metabase.audit-app.core :as audit]
    [metabase.core.core :as mbc]
    [metabase.lib.core :as lib]
@@ -244,6 +245,27 @@
                                                         (throw (Exception. "sync failed")))]
         (is (nil? (#'ee-audit/maybe-sync-audit-db! audit-db false)))
         (is (= 0 (ee.audit.settings/last-analytics-views-checksum)))))))
+
+(deftest audit-db-schema-sync-runs-outside-cluster-lock-transaction-test
+  (mt/with-temp [:model/Database _ {:engine "h2" :is_audit true}]
+    (let [inside-cluster-lock? (atom false)
+          sync-inside-lock?    (atom nil)]
+      (mt/with-dynamic-fn-redefs [cluster-lock/do-with-cluster-lock (fn [_ thunk]
+                                                                      (reset! inside-cluster-lock? true)
+                                                                      (try
+                                                                        (thunk)
+                                                                        (finally
+                                                                          (reset! inside-cluster-lock? false))))
+                                  ee-audit/maybe-install-audit-db! (constantly ::ee-audit/no-op)
+                                  ee-audit/maybe-load-analytics-content! (constantly false)
+                                  ee-audit/views-checksum (constantly 12345)
+                                  ee.audit.settings/last-analytics-views-checksum (constantly 0)
+                                  ee.audit.settings/last-analytics-views-checksum! (constantly nil)
+                                  ee-audit/reconcile-audit-db-duplicates! (constantly nil)
+                                  sync/sync-database! (fn [& _]
+                                                        (reset! sync-inside-lock? @inside-cluster-lock?))]
+        (is (= ::ee-audit/no-op (ee-audit/ensure-audit-db-installed!)))
+        (is (false? @sync-inside-lock?))))))
 
 (deftest adjust-audit-db-to-source-test
   (testing "adjust-audit-db-to-source! correctly handles tables and fields with mixed case"

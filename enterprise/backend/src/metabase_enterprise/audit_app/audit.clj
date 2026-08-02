@@ -337,10 +337,9 @@
        field metadata needs to be refreshed for the new dialect.
      - the `instance_analytics_views` SQL files have changed since the last successful sync,
        meaning a migration may have added a new view that isn't yet in `metabase_table`.
-   The two triggers share one sync because they both want the same operation. Runs synchronously
-   (not in a background future) so it stays inside the caller's cross-node cluster lock and
-   transaction — a sync on another thread would escape the lock and, on a transactional appdb,
-   deadlock against the caller's uncommitted `metabase_table` writes."
+   The two triggers share one sync because they both want the same operation. Runs synchronously,
+   but must not run inside the caller's app-DB transaction: schema sync uses worker connections,
+   and those workers can otherwise deadlock against metadata locks held by the caller."
   [audit-db engine-changed?]
   (let [current      (views-checksum)
         views-stale? (and current (not= current (audit-app.settings/last-analytics-views-checksum)))]
@@ -475,25 +474,28 @@
   content if it is available."
   :feature :none
   []
-  ;; serialize install+adjust+load+sync+reconcile across nodes so a rolling upgrade can't run an adjust or sync
-  ;; against a half-adjusted schema (`with-duplicate-ops-prevented` is per-process only). The install runs inside the
-  ;; lock too, so a node that acquires it after the installer committed sees the DB already exists and falls through
-  ;; to a no-op rather than colliding on the audit DB primary key. The sync runs synchronously inside the lock so it
-  ;; stays in the lock's transaction. If another node already holds the lock it is doing this same work, so we skip
-  ;; rather than fail the boot.
-  (try
-    (cluster-lock/with-cluster-lock {:lock audit-db-cluster-lock :timeout-seconds 5 :retry-config {:max-retries 2}}
-      (u/prog1 (maybe-install-audit-db!)
-        (when-let [audit-db (t2/select-one :model/Database :is_audit true)]
-          ((sync-util/with-duplicate-ops-prevented
-            :sync-database audit-db
-            (fn []
-              (maybe-sync-audit-db! audit-db (maybe-load-analytics-content! audit-db))
-              ;; GHY-3974 Mode A: runs every boot so already-corrupted instances (whose checksum already
-              ;; matches, so the load/sync above are skipped) still self-heal.
-              (reconcile-audit-db-duplicates! (:id audit-db))))))))
-    (catch Throwable e
-      (if (audit-lock-contention? e)
-        (u/prog1 ::skipped-locked
-          (log/info "Another node holds the audit DB lock; skipping audit DB install/load on this node."))
-        (throw e)))))
+  ;; Serialize install+adjust+load across nodes so a rolling upgrade cannot observe half-adjusted metadata. Schema
+  ;; sync itself must run after this transaction commits: it delegates work to other connections, which can require
+  ;; locks incompatible with metadata reads retained by the cluster-lock transaction. Keeping sync inside that
+  ;; transaction makes a single node deadlock with itself on PostgreSQL.
+  (let [sync-request (volatile! nil)
+        result       (try
+                       (cluster-lock/with-cluster-lock
+                         {:lock audit-db-cluster-lock :timeout-seconds 5 :retry-config {:max-retries 2}}
+                         (u/prog1 (maybe-install-audit-db!)
+                           (when-let [audit-db (t2/select-one :model/Database :is_audit true)]
+                             (vreset! sync-request [audit-db (maybe-load-analytics-content! audit-db)]))))
+                       (catch Throwable e
+                         (if (audit-lock-contention? e)
+                           (u/prog1 ::skipped-locked
+                             (log/info "Another node holds the audit DB lock; skipping audit DB install/load on this node."))
+                           (throw e))))]
+    (when-let [[audit-db engine-changed?] @sync-request]
+      ((sync-util/with-duplicate-ops-prevented
+        :sync-database audit-db
+        (fn []
+          (maybe-sync-audit-db! audit-db engine-changed?)
+          ;; GHY-3974 Mode A: runs every boot so already-corrupted instances (whose checksum already
+          ;; matches, so the load/sync above are skipped) still self-heal.
+          (reconcile-audit-db-duplicates! (:id audit-db))))))
+    result))
