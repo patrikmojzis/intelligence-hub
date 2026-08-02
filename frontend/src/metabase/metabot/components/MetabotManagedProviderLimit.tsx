@@ -2,8 +2,6 @@ import { useDisclosure } from "@mantine/hooks";
 import { useCallback } from "react";
 import { t } from "ttag";
 
-import { ExternalLink } from "metabase/common/components/ExternalLink";
-import { useStoreUrl } from "metabase/common/hooks";
 import { useDispatch, useSelector } from "metabase/redux";
 import { dismissUndo } from "metabase/redux/undo";
 import { canAccessSettings } from "metabase/selectors/user";
@@ -52,8 +50,6 @@ export const MetabotManagedProviderLimitActions = ({
     </Modal>
   );
 
-  const storeUrl = useStoreUrl("account/manage/plans");
-
   if (!canConfigureAi) {
     return (
       <Flex
@@ -62,7 +58,7 @@ export const MetabotManagedProviderLimitActions = ({
         {...rest}
       >
         <Text c="text-secondary" fz="sm" lh="1rem">
-          {t`Ask your admin to switch AI providers or start a paid subscription.`}
+          {t`Ask your admin to switch AI providers.`}
         </Text>
       </Flex>
     );
@@ -81,21 +77,6 @@ export const MetabotManagedProviderLimitActions = ({
         >
           {t`Use a different AI provider`}
         </Button>
-        <Text span c="text-secondary" fz="sm" lh="1rem">
-          •
-        </Text>
-        <Button
-          h="1rem"
-          component={ExternalLink}
-          href={storeUrl}
-          target="_blank"
-          variant="subtle"
-          size="xs"
-          fz="sm"
-          p={0}
-        >
-          {t`Start paid subscription`}
-        </Button>
         {configureModal}
       </Flex>
     );
@@ -109,16 +90,6 @@ export const MetabotManagedProviderLimitActions = ({
         p={0}
         onClick={handleConfigure}
       >{t`Use a different AI provider`}</Button>
-      <Button
-        component={ExternalLink}
-        href={storeUrl}
-        target="_blank"
-        variant="subtle"
-        size="xs"
-        p={0}
-      >
-        {t`Start paid subscription`}
-      </Button>
       {configureModal}
     </Flex>
   );
@@ -146,7 +117,7 @@ export const MetabotManagedProviderLimitHoverCard = () => {
       <HoverCard.Dropdown p="md">
         <Flex direction="column" gap="sm">
           <Text fz="sm" lh={1.5}>
-            {t`You've used all of your included AI service tokens. To keep using AI features you can either end your trial early and start your subscription, or stay in the trial and add your own AI provider API key.`}
+            {t`You've used all of your included AI service tokens. To keep using AI features, add your own AI provider API key.`}
           </Text>
           <MetabotManagedProviderLimitActions inline />
         </Flex>
@@ -168,7 +139,7 @@ const MetabotManagedProviderLimitToastContent = () => {
         {t`You've run out of AI service tokens`}
       </Text>
       <Text c="text-secondary" fz="sm" lh={1.4}>
-        {t`You've used all of your included AI service tokens. To keep using AI features you can either end your trial early and start your subscription, or stay in the trial and add your own AI provider API key.`}
+        {t`You've used all of your included AI service tokens. To keep using AI features, add your own AI provider API key.`}
       </Text>
       <MetabotManagedProviderLimitActions
         inline

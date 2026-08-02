@@ -5,7 +5,6 @@ import { MetabaseAIProviderSetup } from "./components/MetabotAdmin/MetabaseAIPro
 
 export function initializePlugin() {
   if (
-    hasPremiumFeature("offer-metabase-ai-managed") ||
     hasPremiumFeature("metabase-ai-managed") ||
     hasPremiumFeature("metabot-v3")
   ) {

@@ -26,7 +26,7 @@ export const getAdminPaths: () => AdminPath[] = () => {
     },
     {
       name: t`AI`,
-      path: "/admin/metabot",
+      path: "/admin/metabot/mcp",
       key: "metabot",
     },
     {

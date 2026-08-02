@@ -4,8 +4,7 @@ import { match } from "ts-pattern";
 import { t } from "ttag";
 
 import { skipToken } from "metabase/api";
-import { UpsellStorage } from "metabase/common/components/upsells/UpsellStorage";
-import { useHasTokenFeature, useStoreUrl } from "metabase/common/hooks";
+import { useHasTokenFeature } from "metabase/common/hooks";
 import {
   CONTENT_MAX_WIDTH,
   ContactAdminAlert,
@@ -137,8 +136,6 @@ export const GdriveAddDataPanel = ({
 
   const isAdmin = useSelector(getUserIsAdmin);
   const hasStorage = useHasTokenFeature("attached_dwh");
-  const storeUrl = useStoreUrl("account/storage");
-
   const showGdrive = useShowGdrive();
   const { data: folder, error } = useGetGsheetsFolderQuery(
     !showGdrive ? skipToken : undefined,
@@ -149,7 +146,7 @@ export const GdriveAddDataPanel = ({
 
   const folderUrl = folder?.url;
 
-  const NO_STORAGE_SUBTITLE = t`To work with spreadsheets, you can add storage to your instance.`;
+  const NO_STORAGE_SUBTITLE = t`Google Sheets imports require configured file storage.`;
   // eslint-disable-next-line metabase/no-literal-metabase-strings -- admin only
   const ERROR_MESSAGE = t`Please check that the folder is shared with the Metabase Service Account.`;
 
@@ -162,11 +159,7 @@ export const GdriveAddDataPanel = ({
   }
 
   if (!hasStorage) {
-    return (
-      <PanelWrapper subtitle={NO_STORAGE_SUBTITLE}>
-        <UpsellStorage location="add-data-modal-sheets" />
-      </PanelWrapper>
-    );
+    return <PanelWrapper subtitle={NO_STORAGE_SUBTITLE} />;
   }
 
   // If a user is an admin of a hosted instance with storage but for some reason
@@ -214,11 +207,9 @@ export const GdriveAddDataPanel = ({
     return (
       <PanelWrapper subtitle={NO_STORAGE_SUBTITLE}>
         <ErrorAlert
-          // eslint-disable-next-line metabase/no-literal-metabase-strings -- admin only
-          error={t`Metabase Storage is full. Add more storage to continue syncing.`}
+          error={t`Storage is full. Configure file storage to continue syncing.`}
         >
           <Group gap="sm" mt="sm" align="center">
-            <CTALink href={storeUrl} text={t`Add storage`} />
             <CTALink href={folderUrl} text={t`Go to Google Drive`} />
           </Group>
         </ErrorAlert>

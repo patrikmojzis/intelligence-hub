@@ -8,15 +8,11 @@ import {
 } from "metabase/admin/components/SettingsSection";
 import { LicenseInput } from "metabase/admin/settings/components/LicenseInput";
 import { SettingHeader } from "metabase/admin/settings/components/SettingHeader";
-import { ExplorePlansIllustration } from "metabase/admin/settings/components/SettingsLicense/ExplorePlansIllustration";
 import { useGetAdminSettingsDetailsQuery } from "metabase/api";
 import { ExternalLink } from "metabase/common/components/ExternalLink";
 import { LoadingAndErrorWrapper } from "metabase/common/components/LoadingAndErrorWrapper";
 import { useSetting, useToast } from "metabase/common/hooks";
-import { useSelector } from "metabase/redux";
-import type { State } from "metabase/redux/store";
-import { getUpgradeUrl } from "metabase/selectors/settings";
-import { Box, Divider, Flex, Stack } from "metabase/ui";
+import { Box, Stack } from "metabase/ui";
 import { useGetBillingInfoQuery } from "metabase-enterprise/api";
 import { useLicense } from "metabase-enterprise/settings/hooks/use-license";
 import type { TokenStatus } from "metabase-types/api";
@@ -25,7 +21,6 @@ import { BillingInfo } from "../BillingInfo";
 
 const HOSTING_FEATURE_KEY = "hosting";
 const STORE_MANAGED_FEATURE_KEY = "metabase-store-managed";
-const NO_UPSELL_FEATURE_HEY = "no-upsell";
 
 const getDescription = ({
   tokenStatus,
@@ -121,8 +116,6 @@ export const LicenseAndBillingSettings = () => {
   const shouldShowLicenseInput =
     !tokenStatus?.features?.includes(HOSTING_FEATURE_KEY);
 
-  const shouldUpsell = !tokenStatus?.features?.includes(NO_UPSELL_FEATURE_HEY);
-
   return (
     <SettingsPageWrapper title={t`License`}>
       <SettingsSection>
@@ -162,34 +155,8 @@ export const LicenseAndBillingSettings = () => {
               />
             </Box>
           )}
-
-          {tokenStatus?.valid && shouldUpsell && <UpsellSection />}
         </Stack>
       </SettingsSection>
     </SettingsPageWrapper>
   );
 };
-
-function UpsellSection() {
-  const upgradeUrl = useSelector((state: State) =>
-    getUpgradeUrl(state, { utm_content: "license" }),
-  );
-
-  return (
-    <Box mt="xl">
-      <SettingHeader
-        id="upsell"
-        title={t`Looking for more?`}
-        description={jt`You can get priority support, more tools to help you share your insights with your teams and powerful options to help you create seamless, interactive data experiences for your customers with ${(
-          <ExternalLink key="plans" href={upgradeUrl}>
-            {t`our other paid plans.`}
-          </ExternalLink>
-        )}`}
-      />
-      <Flex mt="md" justify="flex-end">
-        <ExplorePlansIllustration />
-      </Flex>
-      <Divider />
-    </Box>
-  );
-}

@@ -1,19 +1,13 @@
 import { t } from "ttag";
 
 import { skipToken, useGetDatabaseQuery } from "metabase/api";
-import { ExternalLink } from "metabase/common/components/ExternalLink";
-import { useSetting, useStoreUrl } from "metabase/common/hooks";
-import { useSelector } from "metabase/redux";
-import { getUserIsAdmin } from "metabase/selectors/user";
+import { useSetting } from "metabase/common/hooks";
 import { _FileUploadErrorModal } from "metabase/status/components/FileUploadStatusLarge/FileUploadErrorModal";
 import { Box, Button, Modal, Stack, Text } from "metabase/ui";
 
 import databaseError from "./database-error.svg?component";
 
 function PausedModal({ onClose }: { onClose: () => void }) {
-  const storeUrl = useStoreUrl("account/storage");
-  const isAdmin = useSelector(getUserIsAdmin);
-
   return (
     <Modal opened onClose={onClose} padding="xl" withCloseButton={false}>
       <Stack gap="md" pt="lg" ta="center">
@@ -22,30 +16,13 @@ function PausedModal({ onClose }: { onClose: () => void }) {
           {t`Couldn't upload the file, storage is full`}
         </Text>
         <Text c="text-secondary">
-          {isAdmin
-            ? // eslint-disable-next-line metabase/no-literal-metabase-strings -- admin only
-              t`Add more storage to your Metabase or connect a database to store the uploaded files.`
-            : t`Please contact your admin to add more storage.`}
+          {t`Connect a database to store uploaded files, or contact your admin to configure file storage.`}
         </Text>
 
         <Stack w="50%" my="lg" mx="auto">
-          {isAdmin ? (
-            <>
-              <Button
-                variant="filled"
-                component={ExternalLink}
-                href={storeUrl}
-                target="_blank"
-              >
-                {t`Add more storage`}
-              </Button>
-              <Button onClick={onClose}>{t`Cancel`}</Button>
-            </>
-          ) : (
-            <Button variant="filled" onClick={onClose}>
-              {t`OK`}
-            </Button>
-          )}
+          <Button variant="filled" onClick={onClose}>
+            {t`OK`}
+          </Button>
         </Stack>
       </Stack>
     </Modal>

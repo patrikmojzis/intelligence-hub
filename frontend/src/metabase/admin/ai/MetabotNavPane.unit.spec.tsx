@@ -53,14 +53,11 @@ describe("MetabotNavPane", () => {
     reinitialize();
   });
 
-  it("hides the ai controls items and disables MCP when all AI features are disabled", () => {
-    setup({
-      aiControlsEnabled: true,
-      aiFeaturesEnabled: false,
-      isConfigured: true,
-    });
+  it("shows only MCP nav and disables it when all AI features are disabled", () => {
+    setup({ aiFeaturesEnabled: false });
 
-    expect(screen.getByText("AI Settings")).toBeInTheDocument();
+    expect(screen.queryByText("AI Settings")).not.toBeInTheDocument();
+    expect(screen.getByText("MCP")).toBeInTheDocument();
     expect(
       screen.getByText("MCP", { selector: '[data-disabled="true"] *' }),
     ).toBeInTheDocument();
@@ -69,51 +66,10 @@ describe("MetabotNavPane", () => {
     expect(screen.queryByText("System prompts")).not.toBeInTheDocument();
   });
 
-  it("displays the ai controls in a disabled state when not configured", async () => {
-    setup({ aiControlsEnabled: true, isConfigured: false });
+  it("shows the MCP settings and authorizations links", async () => {
+    setup({ aiFeaturesEnabled: true });
 
-    expect(await screen.findByText("AI Settings")).toBeInTheDocument();
-    expect(
-      screen.queryByText("MCP", { selector: '[data-disabled="true"] *' }),
-    ).not.toBeInTheDocument();
-
-    expect(
-      screen.getByText("Usage controls", {
-        selector: '[data-disabled="true"] *',
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Customization", {
-        selector: '[data-disabled="true"] *',
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("System prompts", {
-        selector: '[data-disabled="true"] *',
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("displays the ai controls upsell links when the ai controls feature is unavailable", async () => {
-    setup({ aiControlsEnabled: false, aiFeaturesEnabled: true });
-
-    expect(await screen.findByText("AI Settings")).toBeInTheDocument();
-    expect(screen.getByText("MCP")).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("link", { name: /Usage controls/ }),
-    ).toHaveAttribute(
-      "href",
-      "/admin/metabot/usage-controls/ai-feature-access",
-    );
-    expect(screen.getByRole("link", { name: /Customization/ })).toHaveAttribute(
-      "href",
-      "/admin/metabot/customization",
-    );
-    expect(
-      screen.getByRole("link", { name: /System prompts/ }),
-    ).toHaveAttribute("href", "/admin/metabot/system-prompts/metabot-chat");
-
+    expect(screen.queryByText("AI Settings")).not.toBeInTheDocument();
     await userEvent.click(await screen.findByText("MCP"));
 
     expect(
@@ -122,19 +78,7 @@ describe("MetabotNavPane", () => {
     expect(
       screen.getByRole("link", { name: "Authorizations" }),
     ).toHaveAttribute("href", "/admin/metabot/mcp/authorizations");
-  });
-
-  it("displays the usage auditing upsell link when audit app is available and ai controls is unavailable", async () => {
-    setup({
-      aiControlsEnabled: false,
-      auditAppEnabled: true,
-      aiFeaturesEnabled: true,
-    });
-
-    expect(await screen.findByText("AI Settings")).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("link", { name: /Usage auditing/ }),
-    ).toHaveAttribute("href", "/admin/metabot/usage-auditing");
+    expect(screen.queryByText("Usage controls")).not.toBeInTheDocument();
+    expect(screen.queryByText("Usage auditing")).not.toBeInTheDocument();
   });
 });

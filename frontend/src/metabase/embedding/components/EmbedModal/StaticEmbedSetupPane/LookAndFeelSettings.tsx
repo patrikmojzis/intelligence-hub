@@ -2,7 +2,6 @@ import { match } from "ts-pattern";
 import { jt, t } from "ttag";
 
 import { ExternalLink } from "metabase/common/components/ExternalLink";
-import { UpsellMetabaseBanner } from "metabase/common/components/upsells/UpsellMetabaseBanner";
 import { useDocsUrl } from "metabase/common/hooks";
 import type {
   DisplayTheme,
@@ -10,10 +9,9 @@ import type {
   EmbeddingDisplayOptions,
 } from "metabase/embedding/types";
 import { useSelector } from "metabase/redux";
-import { getSetting, getUpgradeUrl } from "metabase/selectors/settings";
+import { getSetting } from "metabase/selectors/settings";
 import { getCanWhitelabel } from "metabase/selectors/whitelabel";
 import {
-  Divider,
   SegmentedControl,
   Select,
   Stack,
@@ -65,12 +63,6 @@ export const LookAndFeelSettings = ({
       utm_content: "static-embed-settings-look-and-feel",
     },
   });
-  const upgradePageUrl = useSelector((state) =>
-    getUpgradeUrl(state, {
-      utm_campaign: "embedding-static-font",
-      utm_content: "static-embed-settings-look-and-feel",
-    }),
-  );
   const canWhitelabel = useSelector(getCanWhitelabel);
   const availableFonts = useSelector((state) =>
     getSetting(state, "available-fonts"),
@@ -90,7 +82,7 @@ export const LookAndFeelSettings = ({
             >{t`documentation`}</ExternalLink>
           )} for more.`}</Text>
 
-          {canWhitelabel ? (
+          {canWhitelabel && (
             <Select
               label={
                 <Text fw="bold" mb="0.25rem" lh="1rem">
@@ -115,13 +107,6 @@ export const LookAndFeelSettings = ({
                 });
               }}
             />
-          ) : (
-            <Text>{jt`You can change the font with ${(
-              <ExternalLink
-                key="fontPlan"
-                href={upgradePageUrl}
-              >{t`a paid plan`}</ExternalLink>
-            )}.`}</Text>
           )}
 
           <DisplayOptionSection title={t`Theme`}>
@@ -201,15 +186,6 @@ export const LookAndFeelSettings = ({
             ))}
         </Stack>
       </StaticEmbedSetupPaneSettingsContentSection>
-
-      {!canWhitelabel && (
-        <>
-          <Divider my="2rem" />
-          <div aria-label={t`Removing the banner`}>
-            <UpsellMetabaseBanner />
-          </div>
-        </>
-      )}
     </>
   );
 };

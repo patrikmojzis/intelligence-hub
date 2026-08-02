@@ -5,7 +5,6 @@ import { t } from "ttag";
 import { LoadingAndErrorWrapper } from "metabase/common/components/LoadingAndErrorWrapper";
 import { useSetting } from "metabase/common/hooks";
 import { usePageTitle } from "metabase/hooks/use-page-title";
-import { PLUGIN_TRANSFORMS } from "metabase/plugins";
 import { useSelector } from "metabase/redux";
 import { useTransformSupportedDbs } from "metabase/transforms/hooks/use-transform-supported-dbs";
 import { EnableTransformsPage } from "metabase/transforms/pages/EnableTransformsPage/EnableTransformsPage";
@@ -30,7 +29,7 @@ export function TransformsSectionLayout({
     useTransformSupportedDbs();
 
   if (shouldShowUpsell) {
-    return <PLUGIN_TRANSFORMS.TransformsUpsellPage />;
+    return null;
   } else if (!isTransformsEnabled && !isHosted) {
     return <EnableTransformsPage />;
   }

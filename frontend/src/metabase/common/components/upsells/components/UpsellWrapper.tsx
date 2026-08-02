@@ -1,21 +1,13 @@
-import { useSelector } from "metabase/redux";
-import { getUserIsAdmin } from "metabase/selectors/user";
-
 /**
- * we should wrap all upsell components in this HoC to ensure that they are only rendered for admins
+ * Intelligence Hub patch: suppress Metabase marketing upsell surfaces.
+ *
+ * This intentionally does not unlock or emulate any paid/enterprise features;
+ * it only hides upsell UI in this forked build.
  */
 export function UpsellWrapper<Props extends object>(
-  Component: React.ComponentType<Props>,
+  _Component: React.ComponentType<Props>,
 ) {
-  const WrappedComponent = (props: Props) => {
-    const isAdmin = useSelector(getUserIsAdmin);
-
-    if (!isAdmin) {
-      return null;
-    }
-
-    return <Component {...props} />;
-  };
+  const WrappedComponent = (_props: Props) => null;
 
   return WrappedComponent;
 }

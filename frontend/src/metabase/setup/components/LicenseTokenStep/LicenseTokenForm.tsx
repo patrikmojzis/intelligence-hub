@@ -1,7 +1,5 @@
-import { c, t } from "ttag";
+import { t } from "ttag";
 
-import { ExternalLink } from "metabase/common/components/ExternalLink";
-import { useStoreUrl } from "metabase/common/hooks";
 import {
   Form,
   FormErrorMessage,
@@ -36,14 +34,6 @@ export const LicenseTokenForm = ({
   onSkip,
   initialValue = "",
 }: LicenseTokenFormProps) => {
-  const storeUrl = useStoreUrl("checkout");
-  const storeLink = (
-    <ExternalLink
-      href={storeUrl}
-      key="store-link"
-    >{t`Try Metabase for free`}</ExternalLink>
-  );
-
   return (
     <FormProvider
       initialValues={{ license_token: initialValue }}
@@ -79,10 +69,6 @@ export const LicenseTokenForm = ({
                     <HoverCard.Dropdown>
                       <Stack gap="md" p="md" w={CARD_WIDTH}>
                         <Text lh="lg">{t`Find your license token in the subscription confirmation email from Metabase`}</Text>
-                        <Text lh="lg">{c(
-                          "When users have no token, they can visit the link ${0} pointing to the store, where they can purchase a license for Metabase.",
-                        )
-                          .jt`Don't have one? ${storeLink}. During checkout, select the self-hosted version of the Pro plan.`}</Text>
                       </Stack>
                     </HoverCard.Dropdown>
                   </HoverCard>
@@ -109,7 +95,7 @@ export const LicenseTokenForm = ({
               fw="normal"
             >{t`I'll activate later`}</Button>
             <Text c="text-disabled" size="sm">
-              {t`You won't have access to paid features until you activate.`}
+              {t`You can activate a license later from Admin settings.`}
             </Text>
           </Box>
         </Form>

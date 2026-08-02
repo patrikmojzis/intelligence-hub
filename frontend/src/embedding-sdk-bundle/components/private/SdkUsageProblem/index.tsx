@@ -14,6 +14,12 @@ interface Props {
   isLocalHost?: boolean;
 }
 
+const HIDDEN_UPSELL_PROBLEM_TYPES = new Set([
+  "API_KEYS_WITHOUT_LICENSE",
+  "SSO_WITHOUT_LICENSE",
+  "DEVELOPMENT_MODE_CLOUD_INSTANCE",
+]);
+
 export const SdkUsageProblemDisplay = ({
   authConfig,
   allowConsoleLog,
@@ -28,7 +34,10 @@ export const SdkUsageProblemDisplay = ({
     isLocalHost,
   });
 
-  if (!usageProblem) {
+  if (
+    !usageProblem ||
+    HIDDEN_UPSELL_PROBLEM_TYPES.has(usageProblem.type)
+  ) {
     return null;
   }
 

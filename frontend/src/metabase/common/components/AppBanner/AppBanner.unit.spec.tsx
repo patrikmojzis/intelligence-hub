@@ -66,39 +66,25 @@ describe("AppBanner", () => {
       expect(screen.queryByTestId("app-banner")).not.toBeInTheDocument();
     });
 
-    it("should render past-due banner for admin user with tokenStatusStatus: past-due", () => {
+    it("should not render past-due banner for admin user with tokenStatusStatus: past-due", () => {
       setup({
         isAdmin: true,
         tokenStatus: { ...token, status: "past-due" },
       });
 
-      expect(
-        screen.getByText(/We couldn't process payment for your account\./),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          /Pro features won't work right now due to lack of payment\./,
-        ),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("app-banner")).not.toBeInTheDocument();
     });
 
-    it("should render unpaid banner for admin user with tokenStatusStatus: unpaid", () => {
+    it("should not render unpaid banner for admin user with tokenStatusStatus: unpaid", () => {
       setup({
         isAdmin: true,
         tokenStatus: { ...token, status: "unpaid" },
       });
 
-      expect(
-        screen.queryByText(/We couldn't process payment for your account\./),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.getByText(
-          /Pro features won't work right now due to lack of payment\./,
-        ),
-      ).toBeInTheDocument();
+      expect(screen.queryByTestId("app-banner")).not.toBeInTheDocument();
     });
 
-    it("should render an error with details when the token is `invalid`", () => {
+    it("should not render an error with details when the token is `invalid`", () => {
       setup({
         isAdmin: true,
         tokenStatus: {
@@ -108,9 +94,7 @@ describe("AppBanner", () => {
         },
       });
 
-      expect(
-        screen.getByText(/This is a critical damage\./),
-      ).toBeInTheDocument();
+      expect(screen.queryByTestId("app-banner")).not.toBeInTheDocument();
     });
 
     it("should not render for admin user with tokenStatusStatus: something-else", () => {
@@ -238,7 +222,7 @@ describe("AppBanner", () => {
       expect(screen.queryByTestId("app-banner")).not.toBeInTheDocument();
     });
 
-    it("should render if it is a valid instance in a trial period with 7 or fewer days remaining", () => {
+    it("should not render if it is a valid instance in a trial period with 7 or fewer days remaining", () => {
       jest.useFakeTimers();
       jest.setSystemTime(new Date("2024-12-25"));
 
@@ -251,7 +235,7 @@ describe("AppBanner", () => {
         },
       });
 
-      expect(screen.getByTestId("app-banner")).toBeInTheDocument();
+      expect(screen.queryByTestId("app-banner")).not.toBeInTheDocument();
       jest.useRealTimers();
     });
 
