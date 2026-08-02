@@ -36,6 +36,8 @@
                      "HOME"       (env/env :user-home)
                      "WEBPACK_BUNDLE"   "production"
                      "MB_EDITION" mb-edition
+                     "GIT_BRANCH" (env/env :git-branch)
+                     "GIT_COMMIT_SHA" (env/env :git-commit-sha)
                      "EMIT_BUNDLE_STATS" (or (env/env :emit-bundle-stats) "false")}}
               "bun" "run" "build-release"))
       (u/step "Build static viz"
@@ -43,7 +45,9 @@
                :env {"PATH"       (env/env :path)
                      "HOME"       (env/env :user-home)
                      "WEBPACK_BUNDLE"   "production"
-                     "MB_EDITION" mb-edition}}
+                     "MB_EDITION" mb-edition
+                     "GIT_BRANCH" (env/env :git-branch)
+                     "GIT_COMMIT_SHA" (env/env :git-commit-sha)}}
               "bun" "run" "build-release:static-viz"))
       (u/announce "Frontend built successfully."))))
 
