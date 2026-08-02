@@ -1,0 +1,90 @@
+name: intelligence-hub
+region: fra
+
+domains:
+  - domain: ${APP_DOMAIN_NAME}
+    type: PRIMARY
+    minimum_tls_version: "1.2"
+
+ingress:
+  rules:
+    - match:
+        path:
+          prefix: /
+      component:
+        name: web
+        preserve_path_prefix: true
+
+services:
+  - name: web
+    image:
+      registry_type: DOCR
+      repository: intelligence-hub
+      digest: ${IMAGE_DIGEST}
+    instance_count: 1
+    instance_size_slug: apps-s-2vcpu-4gb
+    http_port: 3000
+    termination:
+      drain_seconds: 30
+      grace_period_seconds: 120
+    health_check:
+      initial_delay_seconds: 180
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 18
+      http_path: /api/health
+      port: 3000
+    liveness_health_check:
+      initial_delay_seconds: 300
+      period_seconds: 30
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 5
+      http_path: /livez
+      port: 3000
+    envs:
+      - key: JAVA_OPTS
+        value: -Xmx2g
+        scope: RUN_TIME
+        type: GENERAL
+      - key: JAVA_TIMEZONE
+        value: Europe/Bratislava
+        scope: RUN_TIME
+        type: GENERAL
+      - key: MB_JETTY_HOST
+        value: 0.0.0.0
+        scope: RUN_TIME
+        type: GENERAL
+      - key: MB_JETTY_PORT
+        value: "3000"
+        scope: RUN_TIME
+        type: GENERAL
+      - key: MB_SITE_NAME
+        value: Intelligence Hub
+        scope: RUN_TIME
+        type: GENERAL
+      - key: MB_SITE_URL
+        value: https://${APP_DOMAIN_NAME}
+        scope: RUN_TIME
+        type: GENERAL
+      - key: MB_DB_CONNECTION_URI
+        value: ${MB_DB_CONNECTION_URI}
+        scope: RUN_TIME
+        type: SECRET
+      - key: MB_DB_USER
+        value: ${MB_DB_USER}
+        scope: RUN_TIME
+        type: SECRET
+      - key: MB_DB_PASS
+        value: ${MB_DB_PASS}
+        scope: RUN_TIME
+        type: SECRET
+      - key: MB_ENCRYPTION_SECRET_KEY
+        value: ${MB_ENCRYPTION_SECRET_KEY}
+        scope: RUN_TIME
+        type: SECRET
+
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED

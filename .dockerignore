@@ -3,6 +3,7 @@ target/*
 .circleci
 .cpcache
 .devcontainer
+.git
 .github
 .husky
 .lsp
