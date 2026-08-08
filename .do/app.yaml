@@ -22,7 +22,7 @@ services:
       repository: intelligence-hub
       digest: ${IMAGE_DIGEST}
     instance_count: 1
-    instance_size_slug: apps-s-2vcpu-4gb
+    instance_size_slug: apps-s-1vcpu-2gb
     http_port: 3000
     termination:
       drain_seconds: 30
@@ -45,7 +45,7 @@ services:
       port: 3000
     envs:
       - key: JAVA_OPTS
-        value: -Xmx2g
+        value: -Xmx1200m
         scope: RUN_TIME
         type: GENERAL
       - key: JAVA_TIMEZONE
